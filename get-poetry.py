@@ -320,9 +320,9 @@ class Installer:
         r"(?:\+[^\s]+)?"
     )
 
-    REPOSITORY_URL = "https://github.com/python-poetry/poetry"
+    REPOSITORY_URL = "https://github.com/leftys/poetry"
     BASE_URL = REPOSITORY_URL + "/releases/download/"
-    FALLBACK_BASE_URL = "https://github.com/sdispater/poetry/releases/download/"
+    FALLBACK_BASE_URL = "https://github.com/leftys/poetry/releases/download/"
 
     def __init__(
         self,
@@ -374,70 +374,7 @@ class Installer:
         self.remove_from_path()
 
     def get_version(self):
-        print(colorize("info", "Retrieving Poetry metadata"))
-
-        metadata = json.loads(self._get(self.METADATA_URL).decode())
-
-        def _compare_versions(x, y):
-            mx = self.VERSION_REGEX.match(x)
-            my = self.VERSION_REGEX.match(y)
-
-            vx = tuple(int(p) for p in mx.groups()[:3]) + (mx.group(5),)
-            vy = tuple(int(p) for p in my.groups()[:3]) + (my.group(5),)
-
-            if vx < vy:
-                return -1
-            elif vx > vy:
-                return 1
-
-            return 0
-
-        print("")
-        releases = sorted(
-            metadata["releases"].keys(), key=cmp_to_key(_compare_versions)
-        )
-
-        if self._version and self._version not in releases:
-            print(colorize("error", "Version {} does not exist.".format(self._version)))
-
-            return None, None
-
-        version = self._version
-        if not version:
-            for release in reversed(releases):
-                m = self.VERSION_REGEX.match(release)
-                if m.group(5) and not self.allows_prereleases():
-                    continue
-
-                version = release
-
-                break
-
-        current_version = None
-        if os.path.exists(POETRY_LIB):
-            with open(
-                os.path.join(POETRY_LIB, "poetry", "__version__.py"), encoding="utf-8"
-            ) as f:
-                version_content = f.read()
-
-            current_version_re = re.match(
-                '(?ms).*__version__ = "(.+)".*', version_content
-            )
-            if not current_version_re:
-                print(
-                    colorize(
-                        "warning",
-                        "Unable to get the current Poetry version. Assuming None",
-                    )
-                )
-            else:
-                current_version = current_version_re.group(1)
-
-        if current_version == version and not self._force:
-            print("Latest version already installed.")
-            return None, current_version
-
-        return version, current_version
+        return "leftys", None
 
     def customize_install(self):
         if not self._accept_all:
